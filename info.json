@@ -1,0 +1,11 @@
+
+{
+  "name": "SimplePeaceMod",
+  "version": "0.16.2",
+  "title": "Simple Peace Mod",
+  "author": "Anton-V-K",
+  "contact": "ka5@ua.fm",
+  "description": "Removes military recipes and technologies as well as destroys enemies periodically",
+  "dependencies": ["base >= 0.16"],
+  "factorio_version": "0.16"
+}

@@ -1,0 +1,5 @@
+local techno =
+{
+}
+
+return techno
