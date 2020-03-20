@@ -34,9 +34,11 @@ end
 			local guns = player.get_inventory(defines.inventory.player_guns)
 			local mags = player.get_inventory(defines.inventory.player_ammo)
             if guns then
-			guns.clear()
+			    guns.clear()
+            end
             if mags then
-			mags.clear()
+			    mags.clear()
+            end
 
 			local toolbelt = player.get_quickbar()
 			toolbelt.remove{name="grenade", count="100"} -- New hope / Level 03
