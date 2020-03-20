@@ -33,7 +33,9 @@ end
 		local function ClearWeapons(player)
 			local guns = player.get_inventory(defines.inventory.player_guns)
 			local mags = player.get_inventory(defines.inventory.player_ammo)
+            if guns
 			guns.clear()
+            if mags
 			mags.clear()
 
 			local toolbelt = player.get_quickbar()
