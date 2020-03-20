@@ -1,2 +1,2 @@
 # SimplePeaceMod
-Factorion 0.16 mod to support peace mode
+Factorio 0.16.x (0.16.51) mod to support peace mode
