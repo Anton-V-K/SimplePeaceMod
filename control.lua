@@ -41,12 +41,16 @@ end
             end
 
 			local toolbelt = player.get_quickbar()
-			toolbelt.remove{name="grenade", count="100"} -- New hope / Level 03
-			--toolbelt.remove{type="ammo", count="100"}
-			toolbelt.remove{name="gun-turret", count="100"}
+            if toolbelt then
+			    toolbelt.remove{name="grenade", count="100"} -- New hope / Level 03
+			    --toolbelt.remove{type="ammo", count="100"}
+			    toolbelt.remove{name="gun-turret", count="100"}
+            end
 
 			local inv = player.get_inventory(defines.inventory.player_main)
-			inv.remove{name="gun-turret", count="100"}
+            if inv then
+			    inv.remove{name="gun-turret", count="100"}
+            end
 
 			local car = player.get_inventory(defines.inventory.player_vehicle)
 			if car then
