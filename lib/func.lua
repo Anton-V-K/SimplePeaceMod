@@ -11,6 +11,18 @@ function has(tab, val)
     return false
 end
 
+-- Splits given string 's' into parts, which are separated with given separator 'sep'
+-- (c) https://stackoverflow.com/a/40180465/536172
+function split(s, sep)
+    local fields = {}
+
+    local sep = sep or " "
+    local pattern = string.format("([^%s]+)", sep)
+    string.gsub(s, pattern, function(c) fields[#fields + 1] = c end)
+
+    return fields
+end
+
 -- Converts given table 'tab' to string (for printing)
 -- (c) https://stackoverflow.com/a/50959106/536172
 function tableToString(tab)
