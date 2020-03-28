@@ -10,3 +10,9 @@ Factorio 0.16.x (0.16.51) mod to support peace mode
  Factorissimo2  | 2.2.3     | Yes
  Map Ping       | 1.0.4     | Yes
  ZRecycling     | 0.16.8    | Yes
+
+## History
+
+### 0.16.5 (28.03.2020)
+- Optimization of map cleanup from enemies and weapons (performed during map chunk generation)
+- Backward compatibility fixes in recipes and technologies (to support loading of games saved in old versions of Factorio)
