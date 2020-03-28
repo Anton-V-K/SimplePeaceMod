@@ -16,13 +16,20 @@ local etypes = { "turret", "unit", "unit-spawner"
 local inames = { "cluster-grenade"
                , "firearm-magazine"
                , "grenade"                      -- also in New hope / Level 03
-               , "gun-turret"
+               --, "gun-turret"                 -- handled through 'wtypes'
                , "land-mine"
-               , "piercing-rounds-magazine"     -- also in New hope / Level 03 (count="2000")
+               -- , "piercing-rounds-magazine"  -- needed to finish New hope / Level 02 + a lot of them in New hope / Level 03
                }
+
+-- names of weapons which can be built/placed on land
+local wnames =  { "artillery-wagon", "tank"     -- vehicles
+                , "defender-capsule", "destroyer-capsule", "distractor-capsule"
+                , "land-mine"
+                }
 
 -- types of weapons which can be built on land
 local wtypes = { "ammo-turret", "artillery-turret", "electric-turret", "fluid-turret" --, "gun-turret"
+               , "artillery-wagon"              -- military vehicles
                }
 
 -- types of weapons which can be placed on the ground in stacks
@@ -128,7 +135,6 @@ end
         local function DestroyWeaponsInArea(surface, ltx, lty, rbx, rby)
 			-- game.print("DEBUG: DestroyWeapons - start")
 
-			local wnames = { "artillery-wagon", "defender-capsule", "destroyer-capsule", "distractor-capsule", "land-mine", "tank" }
 			-- names of the items which can be placed on the ground
 			local wnames_on_ground =
 			{
@@ -256,20 +262,18 @@ end
         -- To enforce peace when any production or military entity is built
 		script.on_event(defines.events.on_built_entity, function(event)
 			local entity = event.created_entity
-			if entity.valid == true
-			   and has({"assembling-machine", "furnace", "mining-drill" }, entity.type)
-			   then
-				-- game.print(entity.type .. " " .. entity.name) -- DEBUG
-			    local player = game.players[event.player_index]
-				Peace(player)
+			if entity.valid == true then
+                -- game.print("on_built_entity: " .. entity.name .. " AS ".. entity.type) -- DEBUG
+                local player = game.players[event.player_index]
+                if has({"assembling-machine", "furnace", "mining-drill" }, entity.type) then
+                    Peace(player)
+                -- If you've managed to build a military entity, let's clean the entire map (just in case)
+                elseif has(wtypes, entity.type) or has(wnames, entity.name) -- if you could build it somehow...
+                then
+                    DestroyEnemies(player)
+                    DestroyWeapons(player)
+                end
 			end
-            -- If you've managed to build a military entity, let's clean the entire map (just in case)
-            if entity.valid == true
-               and has(wtypes, entity.type) -- you could somehow build it... wow!
-               then
-                DestroyEnemies(player)
-                DestroyWeapons(player)
-            end
 		end)
 
         script.on_event(defines.events.on_chunk_generated, function(event)
