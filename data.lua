@@ -75,15 +75,14 @@ if removeMilitaryTech==true then
 	data.raw["technology"]["power-armor-2"] = null
 	-- data.raw["technology"]["rocketry"] = null
     data.raw["technology"]["solar-panel-equipment"] = null
-	data.raw["technology"]["uranium-ammo"] = null
 	
 	RemoveRecipe("basic-bullet-magazine")
 	RemoveRecipe("firearm-magazine", true) -- Required for First steps / Level 03
 	RemoveRecipe("explosives", true)
-	RemoveRecipe("grenade")
+	RemoveRecipe("grenade", true)                   -- Required for loading pre-mod saves
 	RemoveRecipe("light-armor", true) -- First steps / Level 03
 	RemoveRecipe("piercing-bullet-magazine")
-	RemoveRecipe("piercing-rounds-magazine")
+	RemoveRecipe("piercing-rounds-magazine", true)  -- Required for loading pre-mod saves
 	RemoveRecipe("pistol", true) -- Required for First steps / Level 03
 	RemoveRecipe("poison-capsule")
 	RemoveRecipe("rocket")
@@ -92,6 +91,7 @@ if removeMilitaryTech==true then
 	RemoveRecipe("slowdown-capsule")
 	RemoveRecipe("rocket-launcher")
 	RemoveRecipe("submachine-gun", true) -- Required for New hope / Level 03..04
+    RemoveRecipe("uranium-ammo", true)              -- Required for loading pre-mod saves
 
 	-- Some technologies are just hidden for standard campaign's level + other mods to work
 	for i=1,7 do
@@ -132,6 +132,7 @@ if removeMilitaryTech==true then
 	end
 	RemoveTech("tanks", true) -- for Aircraft mod
 	RemoveTech("turrets", true)
+    RemoveTech("uranium-ammo", true)
 
 	--[[
 	for index, prerequisite in pairs(data.raw["technology"]["military-3"].prerequisites) do
