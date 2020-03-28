@@ -1,4 +1,5 @@
 require("lib/config")
+require("lib/func")
 require("lib/helpers")
 
 local const = require("lib/const")
@@ -7,17 +8,25 @@ local techno = require("lib/technologies")
 local last_peace_tick = 0 -- game.tick when peace was "established" last time
 local peace_is_on = false -- only for peace initiation
 
--- (c) https://stackoverflow.com/a/33511182/536172
-local function has(tab, val)
-	if val then
-	    for index, value in ipairs(tab) do
-    	    if value == val then
-        	    return true
-	        end
-    	end
-    end
-    return false
-end
+-- types of natural enemies
+local etypes = { "turret", "unit", "unit-spawner"
+               }
+
+-- names of weapons which are to be removed from inventories periodically (so keep it short)
+local inames = { "cluster-grenade"
+               , "firearm-magazine"
+               , "grenade"                      -- also in New hope / Level 03
+               , "gun-turret"
+               , "land-mine"
+               , "piercing-rounds-magazine"     -- also in New hope / Level 03 (count="2000")
+               }
+
+-- types of weapons which can be built on land
+local wtypes = { "ammo-turret", "artillery-turret", "electric-turret", "fluid-turret" --, "gun-turret"
+               }
+
+-- types of weapons which can be placed on the ground in stacks
+local wtypes_on_ground = { "ammo", "gun" }
 
 local function RemoveItem(recipe, player, inventory)
     -- 'player.force' has 'recipes' (c) https://forums.factorio.com/viewtopic.php?t=31743#p200091
@@ -30,6 +39,21 @@ end
 --if remote.interfaces.freeplay then
     if removeMilitaryTech then
 
+        -- Removes weapons from given inventory
+        local function ClearWeaponsInInventory(inv)
+            if inv then
+                -- inv.remove{name="gun-turret", count="100"} -- TEST
+                for _, iname in pairs(inames) do
+                    if inv.get_item_count(iname) > 0 then
+                        -- game.print("inames - remove: " .. iname) -- DEBUG
+                        while (inv.remove{name=iname, count="100"} > 0) do
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Removes weapons for given player (in all inventories)
 		local function ClearWeapons(player)
 			local guns = player.get_inventory(defines.inventory.player_guns)
 			local mags = player.get_inventory(defines.inventory.player_ammo)
@@ -41,21 +65,18 @@ end
             end
 
 			local toolbelt = player.get_quickbar()
-            if toolbelt then
-			    toolbelt.remove{name="grenade", count="100"} -- New hope / Level 03
-			    --toolbelt.remove{type="ammo", count="100"}
-			    toolbelt.remove{name="gun-turret", count="100"}
-            end
+            ClearWeaponsInInventory(toolbelt)
 
 			local inv = player.get_inventory(defines.inventory.player_main)
-            if inv then
-			    inv.remove{name="gun-turret", count="100"}
-            end
+            ClearWeaponsInInventory(inv)
 
 			local car = player.get_inventory(defines.inventory.player_vehicle)
+            ClearWeaponsInInventory(car)
+            --[[
 			if car then
 				car.remove{name="piercing-rounds-magazine", count="2000"} -- New hope / Level 03
 			end
+            ]]
 			--[[ global.creeperskilled is private for First steps / Level 02
 			if global.creeperskilled == 0 then
 				global.creeperskilled = 2 -- Needed to finish First steps / Level 02 without killing anyone
@@ -69,31 +90,42 @@ end
 			]]
 		end
 
-		-- (c) https://forums.factorio.com/viewtopic.php?t=51090#p298679
-		local function DestroyEnemies(player)
-			local surface = player.surface
-			for c in surface.get_chunks() do
-				local square = {{c.x * 32, c.y * 32}, {c.x * 32 + 32, c.y * 32 + 32}}
-				for key, entity in pairs(surface.find_entities_filtered({area=square, force = "enemy"})) do
-				    if entity.type ~= "electric-energy-interface" then -- Factorissimo2
+        -- Destroys enemies for given surface in the given map area
+        -- (c) https://forums.factorio.com/viewtopic.php?t=51090#p298679
+        local function DestroyEnemiesInArea(surface, ltx, lty, rbx, rby)
+
+                local square = {{ltx, lty}, {rbx, rby}}
+                for key, entity in pairs(surface.find_entities_filtered({area = square, force = "enemy", type = etypes})) do
+                    -- if entity.type ~= "electric-energy-interface" then -- Factorissimo2
+                    if true -- has(wtypes, entity.type)
+                       then
 						-- game.print("DEBUG: entity.destroy() for " .. entity.name .. " AS " .. entity.type) -- DEBUG
 						entity.destroy()
-						game.print({"msg-peace-mode-on-no-enemies"}) -- "Peace mode is ON: no enemies, please")
+						game.print({"msg-peace-mode-on-no-enemies"}) -- "Peace mode is ON: no enemies, please"
+                    else
+                        -- game.print("enemy: " .. entity.name .. " AS " .. entity.type) -- DEBUG
 					end
 				end
 				-- (c) https://www.reddit.com/r/factorio/comments/6khte4/is_there_a_way_to_remove_dead_biterscorpses/
-				for key, entity in pairs(surface.find_entities_filtered({area=square, type = "corpse"})) do
+				for key, entity in pairs(surface.find_entities_filtered({area = square, type = "corpse"})) do
 					if entity.name:match("corpse$") then -- if it is an animal corpse...
 						entity.destroy()
 					else
 						-- game.print(entity.name) -- DEBUG
 					end
 				end
+        end
+
+        local function DestroyEnemies(player)
+            local surface = player.surface
+            for c in surface.get_chunks() do
+                -- local square = {{c.x * 32, c.y * 32}, {c.x * 32 + 32, c.y * 32 + 32}}
+                DestroyEnemiesInArea(surface, c.x * 32, c.y * 32, c.x * 32 + 32, c.y * 32 + 32)
 			end
 		end
 
-		-- Destroys weapons within revealed map area
-		local function DestroyWeapons(player)
+        -- Destroys weapons for given surface in the given map area
+        local function DestroyWeaponsInArea(surface, ltx, lty, rbx, rby)
 			-- game.print("DEBUG: DestroyWeapons - start")
 
 			local wnames = { "artillery-wagon", "defender-capsule", "destroyer-capsule", "distractor-capsule", "land-mine", "tank" }
@@ -108,12 +140,8 @@ end
 				"laser-turret",
 				"personal-laser-defense-equipment", "poison-capsule"
 			}
-			local wtypes = { "ammo-turret", "artillery-turret", "electric-turret", "fluid-turret", "gun-turret" } -- types
-			local wtypes_on_ground = { "ammo", "gun" } -- types of the items which can be placed on the ground
 
-			local surface = player.surface
-			for c in surface.get_chunks() do
-				local square = {{c.x * 32, c.y * 32}, {c.x * 32 + 32, c.y * 32 + 32}}
+                local square = {{ltx, lty}, {rbx, rby}}
 			    -- Note: items on ground can be found using 'item-on-ground' as 'name'
 				for _, entity in pairs(surface.find_entities_filtered({area=square, name="item-on-ground"})) do
 					-- hint about 'stack' - https://forums.factorio.com/viewtopic.php?t=811#p5620
@@ -124,17 +152,28 @@ end
 					   then
 						entity.destroy()
 					else
-						-- game.print("item-on-ground: " .. entity.stack.name) -- DEBUG
+                        -- game.print("item-on-ground: " .. entity.stack.name .. " AS " .. entity.stack.type) -- DEBUG
 					end
 				end
 				for _, entity in pairs(surface.find_entities_filtered({area=square, name=wnames})) do
+                    -- game.print("wnames - destroy: " .. entity.name .. " AS " .. entity.type) -- DEBUG
 					entity.destroy()
 				end
 				for _, entity in pairs(surface.find_entities_filtered({area=square, type=wtypes})) do
+                    -- game.print("wtypes - destroy: " .. entity.name .. " AS " .. entity.type) -- DEBUG
 					entity.destroy()
 				end
-			end
+
 		end
+
+        -- Destroys weapons within revealed map area
+        local function DestroyWeapons(player)
+            local surface = player.surface
+            for c in surface.get_chunks() do
+                -- local square = {{c.x * 32, c.y * 32}, {c.x * 32 + 32, c.y * 32 + 32}}
+                DestroyWeaponsInArea(surface, c.x * 32, c.y * 32, c.x * 32 + 32, c.y * 32 + 32)
+            end
+        end
 
 		-- Hide all military recipes for given player
 		local function HideMilRecipes(player)
@@ -206,15 +245,15 @@ end
 		local function Peace(player)
 			if last_peace_tick < game.tick + const.INTERVAL_LOGIC then
 				ClearWeapons(player)
-				DestroyWeapons(player)
-				DestroyEnemies(player)
+                -- DestroyWeapons(player) -- done in on_chunk_generated
+                -- DestroyEnemies(player) -- done in on_chunk_generated
 				HideMilRecipes(player)
 				HideMilTech(player)
 				last_peace_tick = game.tick
 			end
 		end
 
-   	 	-- To destroy all enemies and weapons when any production entity is built
+        -- To enforce peace when any production or military entity is built
 		script.on_event(defines.events.on_built_entity, function(event)
 			local entity = event.created_entity
 			if entity.valid == true
@@ -224,32 +263,35 @@ end
 			    local player = game.players[event.player_index]
 				Peace(player)
 			end
+            -- If you've managed to build a military entity, let's clean the entire map (just in case)
+            if entity.valid == true
+               and has(wtypes, entity.type) -- you could somehow build it... wow!
+               then
+                DestroyEnemies(player)
+                DestroyWeapons(player)
+            end
 		end)
+
+        script.on_event(defines.events.on_chunk_generated, function(event)
+            -- https://forums.factorio.com/viewtopic.php?p=437974#p437974
+            local lt = event.area.left_top      -- left/top
+            local rb = event.area.right_bottom  -- right/bottom
+            -- game.print("on_chunk_generated: " .. tableToString(event.area)) -- DEBUG
+
+            for index, player in pairs(game.connected_players) do  -- loop through all online players on the server
+                -- https://lua-api.factorio.com/latest/events.html#on_chunk_generated
+                -- NOTE: event.surface won't work
+                DestroyEnemiesInArea(player.surface, lt.x, lt.y, rb.x, rb.y)
+                DestroyWeaponsInArea(player.surface, lt.x, lt.y, rb.x, rb.y)
+            end
+        end)
 
 		script.on_event(defines.events.on_player_created, function(event)
 			local player = game.players[event.player_index]
 			Peace(player)
---[[
-			for slot=1,#guns do
-				local gun = guns[slot]
-		        local mag = mags[slot]
-		        if gun ~= nil and gun.name == "pistol" then
-		        	guns.remove{name=gun.name}
-		        end
-		        if mag and has(all_mags, mag.name) then
-		        	mags.remove{name=mag.name}
-		        end
-		    end
-]]
---[[
-			for i=1,#inventory do
-				RemoveItem("pistol", player)
-	  			player.remove_item{name=}
-	  		end
-]]
   		end)
 
-   	 	-- To destroy all enemies and weapons when tree is mined
+        -- To enforce peace when a tree is mined (sponsored by Greenpeace :)
 		script.on_event(defines.events.on_pre_player_mined_item, function(event)
 			local entity = event.entity -- event.created_entity
 			if entity.valid == true and entity.type == "tree" then
@@ -265,11 +307,13 @@ end
 				if game.tick == 0 or peace_is_on == false then
 					-- game.print("Peace!") -- DEBUG
 					Peace(player)
+                    DestroyEnemies(player)
+                    DestroyWeapons(player)
 					peace_is_on = true
 				else
 					if last_peace_tick < game.tick + const.INTERVAL_LOGIC then
 						ClearWeapons(player)
-						DestroyEnemies(player)
+                        -- DestroyEnemies(player) -- done in on_chunk_generated
 						last_peace_tick = game.tick
 					end
 				end
