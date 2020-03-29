@@ -15,13 +15,13 @@ Basically it performs following steps:
 
 ## Compatibility with other mods
 
- Mod            | 0.16.x    | 0.17.x
- --------       | -------   | ---
- Aircraft       | ~~1.5.3~~ | ?
- Dectorio       | 0.8.11    | ?
- Factorissimo2  | 2.2.3     | ?
- Map Ping       | 1.0.4     | ?
- ZRecycling     | 0.16.8    | ?
+ Mod                                                                | 0.16.x | 0.17.x
+ ------------------------------------------------------------------ | ------ | ------
+ [Aircraft](https://github.com/Stifling-Bossness/Aircraft/)         | 1.5.3  | 1.6.12
+ [Dectorio](https://github.com/jpanther/Dectorio)                   | 0.8.11 | 0.9.16
+ [Factorissimo2](https://github.com/MagmaMcFry/Factorissimo2)       | 2.2.3  | 2.3.10
+ [Map Ping](https://github.com/Suprcheese/Map-Ping)                 | 1.0.4  | Not needed
+ [Recycling-Machines](https://github.com/DRY411S/Recycling-Machines)| 0.16.8 | 0.17.10
 
 ## History
 
