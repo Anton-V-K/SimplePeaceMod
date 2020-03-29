@@ -22,6 +22,10 @@ local inames = { "cluster-grenade"
                -- , "piercing-rounds-magazine"  -- needed to finish New hope / Level 02 + a lot of them in New hope / Level 03
                }
 
+-- types of entities which enforce peace when they are built
+local ptypes = { "assembling-machine", "furnace", "mining-drill"
+               }
+
 -- names of weapons which can be built/placed on land
 local wnames =  { "artillery-wagon", "tank"     -- vehicles
                 , "defender-capsule", "destroyer-capsule", "distractor-capsule"
@@ -266,8 +270,8 @@ end
 		local function Peace(player)
 			if last_peace_tick < game.tick + const.INTERVAL_LOGIC then
 				ClearWeapons(player)
-                -- DestroyWeapons(player) -- done in on_chunk_generated
-                -- DestroyEnemies(player) -- done in on_chunk_generated
+                -- DestroyWeapons(player) -- done in on_built_entity + on_chunk_generated
+                -- DestroyEnemies(player) -- done in on_built_entity + on_chunk_generated
 				HideMilRecipes(player)
 				HideMilTech(player)
 				last_peace_tick = game.tick
@@ -288,17 +292,27 @@ end
             init_global()
         end)
 
+        script.on_event(defines.events.on_biter_base_built, function(event)
+            -- game.print("on_biter_base_built: " .. tableToString(event.entity)) -- DEBUG
+            --[[
+            for _, player in pairs(game.connected_players) do  -- loop through all online players on the server
+                -- https://lua-api.factorio.com/latest/events.html#on_chunk_generated
+                DestroyEnemies(player)
+                DestroyWeapons(player)
+            end
+            ]]
+        end)
+
         -- To enforce peace when any production or military entity is built
 		script.on_event(defines.events.on_built_entity, function(event)
 			local entity = event.created_entity
 			if entity.valid == true then
                 -- game.print("on_built_entity: " .. entity.name .. " AS ".. entity.type) -- DEBUG
                 local player = game.players[event.player_index]
-                if has({"assembling-machine", "furnace", "mining-drill" }, entity.type) then
+                if has(ptypes, entity.type)                                 -- if you've built a production entity
+                   or has(wtypes, entity.type) or has(wnames, entity.name)  -- or you've managed to build a military entity
+                   then
                     Peace(player)
-                -- If you've managed to build a military entity, let's clean the entire map (just in case)
-                elseif has(wtypes, entity.type) or has(wnames, entity.name) -- if you could build it somehow...
-                then
                     DestroyEnemies(player)
                     DestroyWeapons(player)
                 end
@@ -317,6 +331,17 @@ end
                 DestroyEnemiesInArea(player.surface, lt.x, lt.y, rb.x, rb.y)
                 DestroyWeaponsInArea(player.surface, lt.x, lt.y, rb.x, rb.y)
             end
+        end)
+
+        script.on_event(defines.events.on_entity_spawned, function(event)
+            -- game.print("on_entity_spawned: " .. tableToString(event.entity)) -- DEBUG
+            --[[
+            for _, player in pairs(game.connected_players) do  -- loop through all online players on the server
+                -- https://lua-api.factorio.com/latest/events.html#on_chunk_generated
+                DestroyEnemies(player)
+                DestroyWeapons(player)
+            end
+            ]]
         end)
 
 		script.on_event(defines.events.on_player_created, function(event)
@@ -354,7 +379,7 @@ end
 				else
 					if last_peace_tick < game.tick + const.INTERVAL_LOGIC then
 						ClearWeapons(player)
-                        -- DestroyEnemies(player) -- done in on_chunk_generated
+                        -- DestroyEnemies(player) -- done in on_built_entity + on_chunk_generated
 						last_peace_tick = game.tick
 					end
 				end
