@@ -1,12 +1,12 @@
 -- Checks whether given value 'val' is present in given table 'tab'
 -- (c) https://stackoverflow.com/a/33511182/536172
 function has(tab, val)
-	if val then
-	    for index, value in ipairs(tab) do
-    	    if value == val then
-        	    return true
-	        end
-    	end
+    if val then
+        for index, value in ipairs(tab) do
+            if value == val then
+                return true
+            end
+        end
     end
     return false
 end
