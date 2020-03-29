@@ -1,6 +1,7 @@
 require("lib/config")
 require("lib/func")
 require("lib/helpers")
+require("lib/mod")
 
 local const = require("lib/const")
 local techno = require("lib/technologies")
@@ -35,6 +36,13 @@ local wtypes = { "ammo-turret", "artillery-turret", "electric-turret", "fluid-tu
 -- types of weapons which can be placed on the ground in stacks
 local wtypes_on_ground = { "ammo", "gun" }
 
+-- Initialise global vars
+local function init_global()
+    -- game.print("init_global") -- DEBUG
+	global = global or {}
+	global.base_ver = mod_version("base")
+end
+
 local function RemoveItem(recipe, player, inventory)
     -- 'player.force' has 'recipes' (c) https://forums.factorio.com/viewtopic.php?t=31743#p200091
 	if player.force.recipes[recipe] == null or player.force.recipes[recipe].enabled == false then
@@ -62,8 +70,10 @@ end
 
         -- Removes weapons for given player (in all inventories)
 		local function ClearWeapons(player)
-			local guns = player.get_inventory(defines.inventory.player_guns)
-			local mags = player.get_inventory(defines.inventory.player_ammo)
+            -- defines.inventory.character_guns since 0.17.x
+            local guns = player.get_inventory(defines.inventory.player_guns or defines.inventory.character_guns)
+            -- defines.inventory.character_ammo since 0.17.x
+            local mags = player.get_inventory(defines.inventory.player_ammo or defines.inventory.character_ammo)
             if guns then
 			    guns.clear()
             end
@@ -71,13 +81,18 @@ end
 			    mags.clear()
             end
 
-			local toolbelt = player.get_quickbar()
-            ClearWeaponsInInventory(toolbelt)
+            -- the quick bar contains shortcuts to the main inventory since 0.17.x
+            if global.base_ver < 1700 then
+                local toolbelt = player.get_quickbar()
+                ClearWeaponsInInventory(toolbelt)
+            end
 
-			local inv = player.get_inventory(defines.inventory.player_main)
+            -- defines.inventory.character_main since 0.17.x
+            local inv = player.get_inventory(defines.inventory.player_main or defines.inventory.character_main)
             ClearWeaponsInInventory(inv)
 
-			local car = player.get_inventory(defines.inventory.player_vehicle)
+            -- defines.inventory.character_vehicle since 0.17.x
+            local car = player.get_inventory(defines.inventory.player_vehicle or defines.inventory.character_vehicle)
             ClearWeaponsInInventory(car)
             --[[
 			if car then
@@ -259,6 +274,20 @@ end
 			end
 		end
 
+        -- Initialisation stuff (on first load)
+        script.on_init(function(data)
+            init_global()
+        end)
+
+        -- Load stuff (on every load)
+        script.on_load(function(data)
+        end)
+
+        -- Things to check when the mod is updated or other mods are added/removed
+        script.on_configuration_changed(function(data)
+            init_global()
+        end)
+
         -- To enforce peace when any production or military entity is built
 		script.on_event(defines.events.on_built_entity, function(event)
 			local entity = event.created_entity
@@ -291,9 +320,16 @@ end
         end)
 
 		script.on_event(defines.events.on_player_created, function(event)
+            -- game.print("on_player_created") -- DEBUG
 			local player = game.players[event.player_index]
 			Peace(player)
   		end)
+
+        script.on_event(defines.events.on_player_joined_game, function(event)
+            -- game.print("on_player_joined_game") -- DEBUG
+            local player = game.players[event.player_index]
+            Peace(player)
+        end)
 
         -- To enforce peace when a tree is mined (sponsored by Greenpeace :)
 		script.on_event(defines.events.on_pre_player_mined_item, function(event)
@@ -306,6 +342,7 @@ end
 
   		script.on_nth_tick(const.INTERVAL_LOGIC, function (event)
   		    -- game.print(game.tick) -- DEBUG
+            -- mod_version("base") -- DEBUG
   			-- https://wiki.factorio.com/Tutorial:Modding_tutorial/Gangsir#The_control_scripting
   			for index,player in pairs(game.connected_players) do  --loop through all online players on the server
 				if game.tick == 0 or peace_is_on == false then
