@@ -64,17 +64,13 @@ if removeMilitaryTech==true then
     data.raw["technology"]["cliff-explosives"] = null
     data.raw["technology"]["cluster-grenade"] = null
 	data.raw["technology"]["discharge-defense-equipment"] = null
-    data.raw["technology"]["exoskeleton-equipment"] = null
 	data.raw["technology"]["explosive-rocketry"] = null
     data.raw["technology"]["fusion-reactor-equipment"] = null
 	data.raw["technology"]["night-vision-equipment"] = null
 	data.raw["technology"]["personal-laser-defense-equipment"] = null
-	data.raw["technology"]["personal-roboport-equipment"] = null
 	data.raw["technology"]["personal-roboport-equipment-2"] = null
-	data.raw["technology"]["power-armor"] = null
 	data.raw["technology"]["power-armor-2"] = null
 	-- data.raw["technology"]["rocketry"] = null
-    data.raw["technology"]["solar-panel-equipment"] = null
 	
 	RemoveRecipe("basic-bullet-magazine")
 	RemoveRecipe("firearm-magazine", true) -- Required for First steps / Level 03
@@ -105,6 +101,7 @@ if removeMilitaryTech==true then
 	RemoveTech("combat-robotics-3", true) -- Required for New hope / Level 04
 	RemoveTech("energy-shield-equipment", true) -- for Aircraft mod
 	RemoveTech("energy-shield-mk2-equipment", true) -- for Aircraft mod
+    RemoveTech("exoskeleton-equipment", true)               -- 0.17.x
 	RemoveTech("flamethrower", true)
 	for i=1,7 do
 		RemoveTech("follower-robot-count-" .. i, true) -- follower-robot-count-4 is required for New hope / Level 04
@@ -124,12 +121,15 @@ if removeMilitaryTech==true then
 	RemoveTech("military-3", true) -- Required for New hope / Level 04
 	RemoveTech("military-4", true) -- Required for New hope / Level 04
 	RemoveTech("modular-armor", true) -- for Aircraft mod
+    RemoveTech("personal-roboport-equipment", true)         -- 0.17.x
+    RemoveTech("power-armor", true)                         -- 0.17.x
 	for i=1,7 do
 		RemoveTech("shotgun-shell-damage-" .. i, true) -- Required for New hope / Level 04
 	end
 	for i=1,6 do
 		RemoveTech("shotgun-shell-speed-" .. i, true) -- Required for New hope / Level 04
 	end
+    RemoveTech("solar-panel-equipment", true)               -- 0.17.x
 	RemoveTech("tanks", true) -- for Aircraft mod
 	RemoveTech("turrets", true)
     RemoveTech("uranium-ammo", true)
