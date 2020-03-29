@@ -55,7 +55,6 @@ if removeMilitaryTech==true then
         data.raw["technology"]["rocket-speed-" .. i] = null
     end
     ]]
-    data.raw["technology"]["artillery"] = null
     data.raw["technology"]["artillery-shell-range-1"] = null
     data.raw["technology"]["artillery-shell-speed-1"] = null
     data.raw["technology"]["atomic-bomb"] = null
@@ -64,7 +63,6 @@ if removeMilitaryTech==true then
     data.raw["technology"]["cliff-explosives"] = null
     data.raw["technology"]["cluster-grenade"] = null
     data.raw["technology"]["discharge-defense-equipment"] = null
-    data.raw["technology"]["explosive-rocketry"] = null
     data.raw["technology"]["fusion-reactor-equipment"] = null
     data.raw["technology"]["night-vision-equipment"] = null
     data.raw["technology"]["personal-laser-defense-equipment"] = null
@@ -90,6 +88,7 @@ if removeMilitaryTech==true then
     RemoveRecipe("uranium-ammo", true)              -- Required for loading pre-mod saves
 
     -- Some technologies are just hidden for standard campaign's level + other mods to work
+    RemoveTech("artillery", true)                           -- for Aircraft mod
     for i=1,7 do
         RemoveTech("bullet-damage-" .. i, true) -- 'bullet-damage-1' is required for New hope / Level 01..03
     end
@@ -102,6 +101,7 @@ if removeMilitaryTech==true then
     RemoveTech("energy-shield-equipment", true) -- for Aircraft mod
     RemoveTech("energy-shield-mk2-equipment", true) -- for Aircraft mod
     RemoveTech("exoskeleton-equipment", true)               -- 0.17.x
+    RemoveTech("explosive-rocketry", true)                  -- for Aircraft mod
     RemoveTech("flamethrower", true)
     for i=1,7 do
         RemoveTech("follower-robot-count-" .. i, true) -- follower-robot-count-4 is required for New hope / Level 04
