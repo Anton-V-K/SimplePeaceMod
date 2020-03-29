@@ -28,6 +28,8 @@ Basically it performs following steps:
 ### 0.16.7 (29.03.2020)
 - Weapons and enemies are removed when certain production entities are built (workaround for #2)
 - Compatibility with Factorio 0.17.x
+- `control.lua` and `data.lua` were moved into subfolders to be ready for further branching
+- TABs were replaced with SPACEs
 
 ### 0.16.6 (28.03.2020)
 - Weapons and enemies are removed from the map when a military entity is built by the player
