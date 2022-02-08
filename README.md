@@ -31,6 +31,10 @@ Basically it performs following steps:
 
 ## History
 
+### 1.0.0 (08.02.2022)
+
+* Switched to Factorio 1.0.x
+
 ### 0.17.1 (08.02.2022)
 
 - Switched to Factorio 0.17.x
