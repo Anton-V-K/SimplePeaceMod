@@ -10,18 +10,24 @@ Basically it performs following steps:
 - Tweaks the [military science pack](https://wiki.factorio.com/Military_science_pack) so it can be produced from the same amount of raw materials
 
 ## Compatibility with Factorio
- - [X] 0.16.51 (manually change `factorio_version` in `info.json`)
- - [X] 0.17.79 
+| Mod version   | Factorio version |
+| ------------- | ---------------- |
+| 0.16.3-0.16.7 | 0.16.51 (*)      |
+| 0.17.1        | 0.17.79 (*)      |
+| 1.0.0         | 1.0.0            |
+
+(*) The current version (from the master branch) may also work after changing `factorio_version` in `info.json`
 
 ## Compatibility with other mods
 
- Mod                                                                | 0.16.x | 0.17.x
- ------------------------------------------------------------------ | ------ | ------
- [Aircraft](https://github.com/Stifling-Bossness/Aircraft/)         | 1.5.3  | 1.6.12
- [Dectorio](https://github.com/jpanther/Dectorio)                   | 0.8.11 | 0.9.16
- [Factorissimo2](https://github.com/MagmaMcFry/Factorissimo2)       | 2.2.3  | 2.3.10
- [Map Ping](https://github.com/Suprcheese/Map-Ping)                 | 1.0.4  | Not needed
- [Recycling-Machines](https://github.com/DRY411S/Recycling-Machines)| 0.16.8 | 0.17.10
+ Mod                                                                | 0.16.x | 0.17.x| 1.0.x 
+ ------------------------------------------------------------------ | ------ | ------ | ------------------------------------------------------------------ 
+ [Aircraft](https://github.com/Stifling-Bossness/Aircraft/)         | 1.5.3  | 1.6.12| 1.7.1 
+ [Aircraft Realism](https://github.com/jaihysc/Factorio-AircraftRealism) | ? | ? | 1.1.2 
+ [Dectorio](https://github.com/jpanther/Dectorio)                   | 0.8.11 | 0.9.16| 0.11.1 
+ [Factorissimo2](https://github.com/MagmaMcFry/Factorissimo2)       | 2.2.3  | 2.3.10| 2.4.5 
+ [Map Ping](https://github.com/Suprcheese/Map-Ping)                 | 1.0.4  | Not needed| Not needed 
+ [Recycling-Machines](https://github.com/DRY411S/Recycling-Machines)| 0.16.8 | 0.17.10| 1.0.4 
 
 ## History
 
