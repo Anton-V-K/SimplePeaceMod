@@ -63,7 +63,7 @@ if removeMilitaryTech==true then
     data.raw["technology"]["cliff-explosives"] = null
     data.raw["technology"]["cluster-grenade"] = null
     data.raw["technology"]["discharge-defense-equipment"] = null
-    data.raw["technology"]["fusion-reactor-equipment"] = null
+    -- data.raw["technology"]["fusion-reactor-equipment"] = null -- needed since 1.0
     data.raw["technology"]["night-vision-equipment"] = null
     data.raw["technology"]["personal-laser-defense-equipment"] = null
     data.raw["technology"]["personal-roboport-equipment-2"] = null
