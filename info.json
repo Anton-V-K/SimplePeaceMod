@@ -1,12 +1,12 @@
 
 {
   "name": "SimplePeaceMod",
-  "version": "0.16.7",
+  "version": "0.17.1",
   "title": "Simple Peace Mod",
   "author": "Anton-V-K",
   "contact": "",
   "homepage": "https://github.com/Anton-V-K/SimplePeaceMod",
   "description": "Removes military recipes and technologies as well as destroys natural enemies and military entities on the map",
   "dependencies": [],
-  "factorio_version": "0.16"
+  "factorio_version": "0.17"
 }

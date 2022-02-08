@@ -10,8 +10,8 @@ Basically it performs following steps:
 - Tweaks the [military science pack](https://wiki.factorio.com/Military_science_pack) so it can be produced from the same amount of raw materials
 
 ## Compatibility with Factorio
- - [X] 0.16.51
- - [X] 0.17.79 (manually change `factorio_version` in `info.json`)
+ - [X] 0.16.51 (manually change `factorio_version` in `info.json`)
+ - [X] 0.17.79 
 
 ## Compatibility with other mods
 
@@ -25,7 +25,12 @@ Basically it performs following steps:
 
 ## History
 
+### 0.17.1 (08.02.2022)
+
+- Switched to Factorio 0.17.x
+
 ### 0.16.7 (29.03.2020)
+
 - Weapons and enemies are removed when certain production entities are built (workaround for #2)
 - Compatibility with Factorio 0.17.x
 - `control.lua` and `data.lua` were moved into subfolders to be ready for further branching
